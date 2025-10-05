@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/theme_provider.dart';
+import 'onboarding_screen.dart';
 
 /// 설정 화면
 class SettingsScreen extends ConsumerWidget {
@@ -84,6 +86,20 @@ class SettingsScreen extends ConsumerWidget {
                 color: Colors.grey,
               ),
             ),
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.help_outline),
+            title: const Text('앱 소개 다시보기'),
+            subtitle: const Text('튜토리얼 다시 확인'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const OnboardingScreen(),
+                ),
+              );
+            },
           ),
           
           ListTile(
