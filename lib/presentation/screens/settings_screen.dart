@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/theme_provider.dart';
 import 'onboarding_screen.dart';
+import 'help_screen.dart';
 
 /// 설정 화면
 class SettingsScreen extends ConsumerWidget {
@@ -86,6 +87,20 @@ class SettingsScreen extends ConsumerWidget {
                 color: Colors.grey,
               ),
             ),
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.book_outlined),
+            title: const Text('도움말'),
+            subtitle: const Text('계산 공식, FAQ, 상세 설명'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HelpScreen(),
+                ),
+              );
+            },
           ),
 
           ListTile(
