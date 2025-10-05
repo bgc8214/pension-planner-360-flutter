@@ -81,7 +81,7 @@ class _PensionPlannerAppState extends ConsumerState<PensionPlannerApp> {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode.toThemeMode(),
       debugShowCheckedModeBanner: false,
-      initialRoute: _onboardingCompleted! ? '/home' : '/onboarding',
+      home: _onboardingCompleted! ? const HomeScreen() : const OnboardingScreen(),
       routes: {
         '/onboarding': (context) => const OnboardingScreen(),
         '/home': (context) => const HomeScreen(),
