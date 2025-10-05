@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:hive/hive.dart';
 
 part 'pension_input.freezed.dart';
 part 'pension_input.g.dart';
@@ -9,6 +10,7 @@ part 'pension_input.g.dart';
 /// (Dart는 한글 식별자를 공식 지원하지 않음)
 @freezed
 class PensionInput with _$PensionInput {
+  @HiveType(typeId: 1, adapterName: 'PensionInputAdapter')
   const factory PensionInput({
     // 모듈 1 입력 (세액공제 계산)
     @Default(90000000) int totalSalary, // 총급여액
