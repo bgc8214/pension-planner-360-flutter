@@ -52,3 +52,10 @@ app.*.map.json
 # Hive
 *.hive
 *.lock
+
+# Release signing
+/android/key.properties
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
