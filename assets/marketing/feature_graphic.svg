@@ -1,0 +1,53 @@
+<svg width="1024" height="500" xmlns="http://www.w3.org/2000/svg">
+  <!-- 그라데이션 배경 -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#10B981;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="1024" height="500" fill="url(#bgGrad)"/>
+
+  <!-- 앱 아이콘 (좌측) -->
+  <g transform="translate(80, 100)">
+    <!-- 흰색 원형 배경 -->
+    <circle cx="150" cy="150" r="140" fill="white" opacity="0.95"/>
+
+    <!-- 계산기 -->
+    <rect x="70" y="80" width="160" height="165" rx="15" fill="#4F46E5"/>
+    <rect x="85" y="95" width="130" height="42" rx="8" fill="#DCFCE7"/>
+
+    <!-- 버튼들 -->
+    <rect x="85" y="150" width="30" height="30" rx="5" fill="#F1F5F9"/>
+    <rect x="125" y="150" width="30" height="30" rx="5" fill="#F1F5F9"/>
+    <rect x="165" y="150" width="30" height="30" rx="5" fill="#F1F5F9"/>
+    <rect x="205" y="150" width="30" height="30" rx="5" fill="#FEF3C7"/>
+
+    <rect x="85" y="190" width="30" height="30" rx="5" fill="#F1F5F9"/>
+    <rect x="125" y="190" width="30" height="30" rx="5" fill="#F1F5F9"/>
+    <rect x="165" y="190" width="30" height="30" rx="5" fill="#F1F5F9"/>
+    <rect x="205" y="190" width="30" height="30" rx="5" fill="#10B981"/>
+
+    <!-- 동전 -->
+    <circle cx="220" cy="105" r="30" fill="#FBBF24" stroke="#F59E0B" stroke-width="3"/>
+    <text x="220" y="116" font-size="24" font-weight="bold" fill="#D97706" text-anchor="middle" font-family="Arial">₩</text>
+  </g>
+
+  <!-- 타이틀 (우측) -->
+  <text x="400" y="180" font-size="72" font-weight="bold" fill="white" font-family="Arial, sans-serif">스마트</text>
+  <text x="400" y="260" font-size="72" font-weight="bold" fill="white" font-family="Arial, sans-serif">연금계산기</text>
+
+  <!-- 부제 -->
+  <text x="400" y="330" font-size="28" fill="white" opacity="0.9" font-family="Arial, sans-serif">연금저축·IRP 세액공제부터</text>
+  <text x="400" y="370" font-size="28" fill="white" opacity="0.9" font-family="Arial, sans-serif">은퇴 후 연금 수령까지</text>
+
+  <!-- 강조 포인트 -->
+  <g transform="translate(820, 200)">
+    <circle cx="0" cy="0" r="80" fill="white" opacity="0.15"/>
+    <text x="0" y="-30" font-size="28" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial">2025년</text>
+    <text x="0" y="5" font-size="24" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial">최신</text>
+    <text x="0" y="35" font-size="24" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial">세법</text>
+  </g>
+</svg>
