@@ -1,5 +1,5 @@
 name: pension_planner_360_flutter
-description: "연금저축 및 IRP 전략 시뮬레이터 - 모바일 앱"
+description: "스마트 연금계산기 - 연금저축 및 IRP 세액공제 계산기"
 publish_to: 'none'
 version: 1.0.0+1
 

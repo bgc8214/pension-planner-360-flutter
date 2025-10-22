@@ -20,12 +20,12 @@ class HelpTexts {
 ''';
 
   // 경고 메시지
-  static String 전체한도초과경고(int 총납입액) => '''
+  static String getTotalLimitWarning(int totalAmount) => '''
 ⚠️ 경고: 전체 연금계좌 납입액이 연간 한도 1,800만원을 초과합니다.
-현재 총 납입액: ${_formatNumber(총납입액)}원
+현재 총 납입액: ${_formatNumber(totalAmount)}원
 ''';
 
-  static const String 세액공제한도초과안내 = '''
+  static const String taxDeductionLimitNotice = '''
 📝 안내: 세액공제 대상 납입액이 한도 900만원을 초과합니다.
 초과분은 세액공제 혜택이 없지만 수령시 비과세로 처리됩니다.
 ''';
@@ -57,7 +57,7 @@ class HelpTexts {
 → 원금 2.7억원 → 미래가치 약 6억원
 ''',
     '연금수령': '''
-연금 수령 시 과세 방식에 따른 실수령액 비교입니다.
+연금 수령 시 과세 방식에 따른 실수령액 ��교입니다.
 
 3가지 과세 방식:
 1. 종합과세: 다른 소득과 합산하여 과세

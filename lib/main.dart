@@ -12,20 +12,47 @@ import 'data/models/pension_input.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Hive 초기화
-  await Hive.initFlutter();
+  // 에러 핸들러 설정
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint('Flutter Error: ${details.exception}');
+    debugPrint('Stack trace: ${details.stack}');
+  };
 
-  // Adapter 등록 (build_runner로 생성된 adapter 사용)
-  if (!Hive.isAdapterRegistered(0)) {
-    Hive.registerAdapter(ScenarioAdapter());
+  try {
+    // Hive 초기화
+    debugPrint('Initializing Hive...');
+    await Hive.initFlutter();
+    debugPrint('Hive initialized successfully');
+
+    // Adapter 등록 (build_runner로 생성된 adapter 사용)
+    if (!Hive.isAdapterRegistered(0)) {
+      debugPrint('Registering ScenarioAdapter...');
+      Hive.registerAdapter(ScenarioAdapter());
+    }
+    if (!Hive.isAdapterRegistered(1)) {
+      debugPrint('Registering PensionInputAdapter...');
+      Hive.registerAdapter(PensionInputAdapter());
+    }
+
+    // Box 열기 - 타임아웃 추가
+    debugPrint('Opening Hive box...');
+    await Hive.openBox<Scenario>('scenarios').timeout(
+      const Duration(seconds: 5),
+      onTimeout: () {
+        debugPrint('Hive box opening timed out, continuing anyway...');
+        throw Exception('Hive initialization timeout');
+      },
+    );
+    debugPrint('Hive box opened successfully');
+  } catch (e, stackTrace) {
+    debugPrint('Hive initialization error: $e');
+    debugPrint('Stack trace: $stackTrace');
+    // Hive 초기화 실패해도 앱은 계속 실행
+    // 시나리오 저장 기능만 비활성화됨
   }
-  if (!Hive.isAdapterRegistered(1)) {
-    Hive.registerAdapter(PensionInputAdapter());
-  }
 
-  // Box 열기
-  await Hive.openBox<Scenario>('scenarios');
-
+  debugPrint('Starting app...');
   runApp(
     const ProviderScope(
       child: PensionPlannerApp(),
@@ -50,10 +77,28 @@ class _PensionPlannerAppState extends ConsumerState<PensionPlannerApp> {
   }
 
   Future<void> _checkOnboardingStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
-    });
+    try {
+      final prefs = await SharedPreferences.getInstance().timeout(
+        const Duration(seconds: 3),
+        onTimeout: () {
+          debugPrint('SharedPreferences timeout, showing onboarding');
+          throw Exception('SharedPreferences timeout');
+        },
+      );
+      if (mounted) {
+        setState(() {
+          _onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error checking onboarding status: $e');
+      // 에러 발생 시 온보딩 표시
+      if (mounted) {
+        setState(() {
+          _onboardingCompleted = false;
+        });
+      }
+    }
   }
 
   @override
@@ -76,7 +121,7 @@ class _PensionPlannerAppState extends ConsumerState<PensionPlannerApp> {
     }
 
     return MaterialApp(
-      title: '연금 플래너 360',
+      title: '스마트 연금계산기',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode.toThemeMode(),
