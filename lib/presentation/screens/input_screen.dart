@@ -13,9 +13,16 @@ class InputScreen extends ConsumerWidget {
     final input = ref.watch(pensionInputNotifierProvider);
     final notifier = ref.read(pensionInputNotifierProvider.notifier);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
+    return GestureDetector(
+      // 화면 터치 시 키보드 닫기
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: SingleChildScrollView(
+        // 스크롤 시 키보드 닫기
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // 세액공제 관련 입력
@@ -143,6 +150,7 @@ class InputScreen extends ConsumerWidget {
             label: const Text('초기화'),
           ),
         ],
+      ),
       ),
     );
   }

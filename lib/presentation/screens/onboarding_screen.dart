@@ -63,7 +63,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   const SizedBox(width: 60),
                   Text(
-                    '연금 플래너 360',
+                    '스마트 연금계산기',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),

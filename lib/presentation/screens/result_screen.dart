@@ -7,10 +7,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import '../providers/calculation_provider.dart';
+import '../providers/pension_input_provider.dart';
+import '../widgets/result/summary_cards.dart';
 import '../widgets/result/tax_deduction_card.dart';
 import '../widgets/result/future_asset_card.dart';
 import '../widgets/result/pension_receipt_card.dart';
 import '../widgets/charts/asset_change_chart.dart';
+import '../widgets/charts/asset_change_table.dart';
+import '../widgets/charts/investment_comparison_card.dart';
+import '../widgets/help/tax_explanations_card.dart';
 
 /// 결과 화면
 class ResultScreen extends ConsumerStatefulWidget {
@@ -183,10 +188,12 @@ class ResultScreenState extends ConsumerState<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final input = ref.watch(pensionInputNotifierProvider);
     final taxDeduction = ref.watch(taxDeductionResultProvider);
     final futureAsset = ref.watch(futureAssetResultProvider);
     final pensionReceipt = ref.watch(pensionReceiptResultProvider);
     final assetChange = ref.watch(assetChangeResultProvider);
+    final investmentComparison = ref.watch(investmentComparisonResultProvider);
 
     return SingleChildScrollView(
       child: RepaintBoundary(
@@ -211,7 +218,7 @@ class ResultScreenState extends ConsumerState<ResultScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          '입력값 변경 시 자동으로 재계산됩니다',
+                          '💡 입력값 변경 시 자동으로 재계산됩니다',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Theme.of(context).colorScheme.onPrimaryContainer,
                               ),
@@ -221,52 +228,152 @@ class ResultScreenState extends ConsumerState<ResultScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
+
+              // 요약 카드 (웹 버전과 동일)
+              SummaryCards(
+                taxDeduction: taxDeduction,
+                futureAsset: futureAsset,
+                assetChange: assetChange,
+                investmentComparison: investmentComparison,
+              ),
+              const SizedBox(height: 24),
+
+              // 상세 결과 제목
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  '📋 상세 결과',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
               const SizedBox(height: 16),
 
-              // 세액공제 결과
-              TaxDeductionCard(result: taxDeduction),
-              const SizedBox(height: 16),
+              // 1. 세액공제 상세 (기본 펼쳐짐)
+              _buildAccordion(
+                context,
+                title: '💰 세액공제 상세',
+                defaultExpanded: true,
+                child: TaxDeductionCard(result: taxDeduction),
+              ),
+              const SizedBox(height: 12),
 
-              // 미래자산 결과
-              FutureAssetCard(result: futureAsset),
-              const SizedBox(height: 16),
+              // 2. 미래 자산 상세
+              _buildAccordion(
+                context,
+                title: '📈 미래 자산 상세',
+                child: FutureAssetCard(
+                  result: futureAsset,
+                  averageReturnRate: input.averageReturnRate,
+                  currentAge: input.currentAge,
+                  retirementAge: input.retirementAge,
+                ),
+              ),
+              const SizedBox(height: 12),
 
-              // 연금수령 시뮬레이션 결과
-              PensionReceiptCard(result: pensionReceipt),
-              const SizedBox(height: 16),
+              // 3. 연금 수령 시뮬레이션
+              _buildAccordion(
+                context,
+                title: '🎯 연금 수령 시뮬레이션',
+                child: PensionReceiptCard(
+                  result: pensionReceipt,
+                  annualAmount: input.annualPensionAmount,
+                  retirementAge: input.retirementAge,
+                ),
+              ),
+              const SizedBox(height: 12),
 
-              // 자산변화 차트
-              Card(
+              // 4. 자산 변화 시뮬레이션
+              _buildAccordion(
+                context,
+                title: '💵 자산 변화 시뮬레이션',
+                child: Card(
                 elevation: 4,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.show_chart,
-                            color: Theme.of(context).colorScheme.primary,
-                            size: 32,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            '자산 변화 시뮬레이션',
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
                       AssetChangeChart(result: assetChange),
+                      const SizedBox(height: 24),
+                      const Divider(),
+                      const SizedBox(height: 24),
+                      AssetChangeTable(result: assetChange),
                     ],
                   ),
                 ),
               ),
+              ),
+              const SizedBox(height: 12),
+
+              // 5. 투자 방식 비교
+              _buildAccordion(
+                context,
+                title: '📊 투자 방식 비교',
+                child: Card(
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      InvestmentComparisonCard(
+                        result: investmentComparison,
+                        averageReturnRate: input.averageReturnRate,
+                        currentAge: input.currentAge,
+                        retirementAge: input.retirementAge,
+                        annualPensionAmount: input.annualPensionAmount,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  /// Accordion 빌더 (웹 버전과 동일)
+  Widget _buildAccordion(
+    BuildContext context, {
+    required String title,
+    required Widget child,
+    bool defaultExpanded = false,
+  }) {
+    return Theme(
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Theme.of(context).dividerColor),
+          borderRadius: BorderRadius.circular(12),
+          color: Theme.of(context).cardColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          childrenPadding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+          initiallyExpanded: defaultExpanded,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          children: [child],
         ),
       ),
     );

@@ -23,7 +23,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('연금 플래너 360'),
+        title: const Text('스마트 연금계산기'),
         centerTitle: true,
         actions: [
           // 결과 탭일 때만 공유 버튼 표시
@@ -35,37 +35,66 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               },
               tooltip: '결과 공유',
             ),
-          // 불러오기 버튼
-          IconButton(
-            icon: const Icon(Icons.folder_open),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ScenarioListScreen(),
-                ),
-              );
+          // 팝업 메뉴
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            tooltip: '메뉴',
+            onSelected: (value) {
+              switch (value) {
+                case 'save':
+                  _showSaveDialog(context);
+                  break;
+                case 'load':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ScenarioListScreen(),
+                    ),
+                  );
+                  break;
+                case 'settings':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsScreen(),
+                    ),
+                  );
+                  break;
+              }
             },
-            tooltip: '시나리오 불러오기',
-          ),
-          // 저장 버튼
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () => _showSaveDialog(context),
-            tooltip: '현재 시나리오 저장',
-          ),
-          // 설정 버튼
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsScreen(),
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'save',
+                child: Row(
+                  children: [
+                    Icon(Icons.save_outlined),
+                    SizedBox(width: 12),
+                    Text('저장하기'),
+                  ],
                 ),
-              );
-            },
-            tooltip: '설정',
+              ),
+              const PopupMenuItem(
+                value: 'load',
+                child: Row(
+                  children: [
+                    Icon(Icons.folder_open_outlined),
+                    SizedBox(width: 12),
+                    Text('불러오기'),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    Icon(Icons.settings_outlined),
+                    SizedBox(width: 12),
+                    Text('설정'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -79,6 +108,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
+          // 탭 전환 시 키보드 닫기
+          FocusScope.of(context).unfocus();
           setState(() {
             _currentIndex = index;
           });

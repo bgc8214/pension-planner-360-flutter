@@ -217,13 +217,25 @@ extension FutureAssetResultExtensions on FutureAssetResult {
 }
 
 extension PensionReceiptSimulationResultExtensions on PensionReceiptSimulationResult {
-  int get monthlyAmount => comprehensiveTax.netReceivableAmount;
-  int get comprehensiveTaxMonthlyAmount => comprehensiveTax.netReceivableAmount;
+  // 연간 수령액 기준 (netReceivableAmount는 연간 금액)
+  int get annualAmount => comprehensiveTax.netReceivableAmount;
+  int get monthlyAmount => (comprehensiveTax.netReceivableAmount / 12).round();
+
+  // 종합과세
+  int get comprehensiveTaxAnnualAmount => comprehensiveTax.netReceivableAmount;
+  int get comprehensiveTaxMonthlyAmount => (comprehensiveTax.netReceivableAmount / 12).round();
   int get comprehensiveTaxAmount => comprehensiveTax.totalTaxPayment;
-  int get separateTaxMonthlyAmount => separateTax.netReceivableAmount;
+
+  // 분리과세
+  int get separateTaxAnnualAmount => separateTax.netReceivableAmount;
+  int get separateTaxMonthlyAmount => (separateTax.netReceivableAmount / 12).round();
   int get separateTaxAmount => separateTax.totalTaxPayment;
-  int get lowRateTaxMonthlyAmount => lowRateTax.netReceivableAmount;
+
+  // 저율과세
+  int get lowRateTaxAnnualAmount => lowRateTax.netReceivableAmount;
+  int get lowRateTaxMonthlyAmount => (lowRateTax.netReceivableAmount / 12).round();
   int get lowRateTaxAmount => lowRateTax.totalTaxPayment;
+
   String get recommendedTaxType {
     final amounts = [
       (comprehensiveTax.netReceivableAmount, '종합과세'),
