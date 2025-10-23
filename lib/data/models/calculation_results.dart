@@ -92,6 +92,50 @@ class PensionReceiptSimulationResult with _$PensionReceiptSimulationResult {
       _$PensionReceiptSimulationResultFromJson(json);
 }
 
+/// 건강보험료 계산 결과
+@freezed
+class HealthInsuranceResult with _$HealthInsuranceResult {
+  const factory HealthInsuranceResult({
+    required int monthlyHealthInsurance, // 월건강보험료
+    required int monthlyLongTermCare, // 월장기요양보험료
+    required int monthlyTotalInsurance, // 월총보험료
+    required int annualTotalInsurance, // 연간총보험료
+    required bool isDependentEligible, // 피부양자자격가능여부
+    required int dependentIncomeLimit, // 피부양자소득기준
+    required int dependentAssetLimit, // 피부양자재산기준
+  }) = _HealthInsuranceResult;
+
+  factory HealthInsuranceResult.fromJson(Map<String, dynamic> json) =>
+      _$HealthInsuranceResultFromJson(json);
+}
+
+/// 실제 수령액 계산 결과 (세금 + 건강보험료)
+@freezed
+class NetReceiptResult with _$NetReceiptResult {
+  const factory NetReceiptResult({
+    required int annualPensionAmount, // 연간연금액
+    required int annualTax, // 연간세금
+    required HealthInsuranceResult insuranceResult, // 건강보험료 결과
+  }) = _NetReceiptResult;
+
+  factory NetReceiptResult.fromJson(Map<String, dynamic> json) =>
+      _$NetReceiptResultFromJson(json);
+}
+
+// Extension for calculated properties
+extension NetReceiptResultExtensions on NetReceiptResult {
+  int get annualHealthInsurance => insuranceResult.annualTotalInsurance;
+  bool get isDependentEligible => insuranceResult.isDependentEligible;
+
+  int get netAmountWithDependent => annualPensionAmount - annualTax; // 피부양자 유지시 보험료 없음
+  int get netAmountAsLocalMember => annualPensionAmount - annualTax - annualHealthInsurance;
+
+  int get finalNetAmount => isDependentEligible ? netAmountWithDependent : netAmountAsLocalMember;
+  int get totalDeduction => annualTax + annualHealthInsurance;
+  double get effectiveBurdenRate => (totalDeduction / annualPensionAmount * 100);
+  int get monthlyNetAmount => (finalNetAmount / 12).round();
+}
+
 /// 자산 변화 연차 데이터
 @freezed
 class AssetChangeYearData with _$AssetChangeYearData {
