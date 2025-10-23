@@ -12,10 +12,12 @@ import '../widgets/result/summary_cards.dart';
 import '../widgets/result/tax_deduction_card.dart';
 import '../widgets/result/future_asset_card.dart';
 import '../widgets/result/pension_receipt_card.dart';
+import '../widgets/result/health_insurance_card.dart';
 import '../widgets/charts/asset_change_chart.dart';
 import '../widgets/charts/asset_change_table.dart';
 import '../widgets/charts/investment_comparison_card.dart';
 import '../widgets/help/tax_explanations_card.dart';
+import '../../services/health_insurance_service.dart';
 
 /// 결과 화면
 class ResultScreen extends ConsumerStatefulWidget {
@@ -281,6 +283,25 @@ class ResultScreenState extends ConsumerState<ResultScreen> {
                   result: pensionReceipt,
                   annualAmount: input.annualPensionAmount,
                   retirementAge: input.retirementAge,
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // 3-1. 건강보험료 및 실수령액
+              _buildAccordion(
+                context,
+                title: '🏥 건강보험료 및 실수령액',
+                child: HealthInsuranceCard(
+                  annualPensionAmount: input.annualPensionAmount,
+                  annualTax: pensionReceipt.exceedsThreshold
+                      ? (pensionReceipt.comprehensiveTax.netReceivableAmount >
+                              pensionReceipt.separateTax.netReceivableAmount
+                          ? pensionReceipt.comprehensiveTax.totalTaxPayment
+                          : pensionReceipt.separateTax.totalTaxPayment)
+                      : pensionReceipt.lowRateTax.totalTaxPayment,
+                  insuranceResult: HealthInsuranceService.calculateHealthInsurance(
+                    annualPensionIncome: input.annualPensionAmount,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
